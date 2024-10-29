@@ -31,7 +31,9 @@ export default function ToDoList(){
     }
 
     function handleToggleTask(taskId){
-        setallTasks((prevTasks)=>prevTasks.map())
+        setallTasks((prevTasks)=>prevTasks.map(
+            
+        ))
     }
 
     let mappedAllTasks = allTasks.map((eachTask)=>(
