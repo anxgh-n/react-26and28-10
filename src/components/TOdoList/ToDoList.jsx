@@ -1,59 +1,92 @@
 import { useState } from "react";
 
-export default function ToDoList(){
+export default function TodoList() {
+  const [newTask, setNewTask] = useState("");
+  const [allTasks, setAllTasks] = useState([
+    {
+      taskId: 101,
+      taskName: "Call Friend",
+      isTaskCompleted: false,
+    },
+    {
+      taskId: 102,
+      taskName: "Laundry",
+      isTaskCompleted: false,
+    },
+  ]);
 
-    const
+  function handleToggleTask(taskId) {
+    // creating a copy of the state variable allTasks
+    let copyAllTasks = [...allTasks];
 
-    const [allTasks, setallTasks] = useState(
-        [
-            {
-                taskId:101,
-                taskName: "Call Friend",
-                isTaskCompleted: false
-            },
-            {
-                taskId:102,
-                taskName: "Cooking",
-                isTaskCompleted: false
-            },
-        ]
+    // now traversing through the copy and toggling the isTaskCompleted property
+    copyAllTasks.forEach((eachTask) => {
+      if (eachTask.taskId == taskId)
+        eachTask.isTaskCompleted = !eachTask.isTaskCompleted;
+    });
+    // now set the updated copyAllTasks as the new state for allTasks state variable
+    setAllTasks(copyAllTasks);
+  }
+
+  function handleDeleteTask(event, taskId) {
+    //console.log(taskId);
+    // refer this link to understand event bibbling and how to stop it
+    // https://www.freecodecamp.org/news/event-bubbling-in-javascript/
+    event.stopPropagation();
+    let filteredAllTasks = allTasks.filter(
+      (eachTask) => eachTask.taskId != taskId
     );
+    setAllTasks(filteredAllTasks);
+  }
 
-    function handleDeleteTask(taskId){
-        console.log(taskId);
-        let filteredAllTasks = allTasks.filter(
-            (eachTask)=> eachTask
-        )
+  function handleAddTask(event) {
+    if (event.key === "Enter") {
+      setAllTasks([
+        ...allTasks,
+        {
+          taskId: allTasks[allTasks.length - 1].taskId + 1,
+          taskName: newTask,
+          isTaskCompleted: false,
+        },
+      ]);
+      setNewTask("");
+      event.target.value = "";
     }
+  }
+  let mappedAllTasks = allTasks.map((eachTask) => (
+    <li
+      key={eachTask.taskId}
+      className="list-group-item"
+      onClick={() => handleToggleTask(eachTask.taskId)}
+    >
+      {eachTask.isTaskCompleted ? "✔️" : ""} {eachTask.taskName}{" "}
+      <button
+        className="btn btn-warning"
+        onClick={(e) => handleDeleteTask(e, eachTask.taskId)}
+      >
+        🗑️
+      </button>
+    </li>
+  ));
 
-    function handleAddTask(){
-        setallTasks()
-    }
-
-    function handleToggleTask(taskId){
-        setallTasks((prevTasks)=>prevTasks.map(
-            
-        ))
-    }
-
-    let mappedAllTasks = allTasks.map((eachTask)=>(
-        <li key={eachTask.taskId}
-        className="list-group-item"
-        onClick={()=>handleToggleTask(eachTask.taskId)}>
-            {eachTask.taskName} {eachTask.isTaskCompleted?"✔️":""}
-        <button className="btn btn-warning">🗑️</button>
-        </li>
-    ))
-    return(
-        <>
-        <div className="conatiner m-5">
-            <h3>ToDo ApP</h3> 
-            <div className="form-control-group">
-                <input type="text"
-                 />
-            </div>
-            <ul className="list-group">{mappedAllTasks}</ul>
+  return (
+    <>
+      <div className="container m-5">
+        <h3>TODO APP</h3>
+        <div className="form-control-group">
+          <input
+            type="text"
+            className="form-control"
+            placeholder="Enter new Task"
+            onChange={(e) => setNewTask(e.target.value)}
+            onKeyDown={(e) => handleAddTask(e)}
+          />
+          {/* <button className="btn btn-success my-2" onClick={handleAddTask}>
+            ADD
+          </button> */}
         </div>
-        </>
-    );
+        <ul className="list-group">{mappedAllTasks}</ul>
+      </div>
+    </>
+  );
 }
